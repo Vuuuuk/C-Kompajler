@@ -3,7 +3,6 @@
 %%
 
 (Fun)   { printf("Kljucna_Rec_Fun\n"); }
-(\ )    { printf("Razmak\n"); }
 (\<\<)  { printf("Zagrada_<<\n"); }
 (\>\>)  { printf("Zagrada_>>\n"); }
 \(      { printf("Zagrada_(\n"); }
@@ -21,6 +20,7 @@
 [0-9]{1,5}                 	{ printf("BROJ_TIPA_UNSIGNED_INT\n"); }
 [0-9]{1,5}(,)[0-9]{1,5}    	{ printf("BROJ_TIPA_DECIMAL\n"); }
 
+[\ \n\t]+
 (--)[a-zA-Z0-9]*
 "/*"([^*]|"\n"|(\*+([^*/]|"\n")))*\*+"/" 
 
