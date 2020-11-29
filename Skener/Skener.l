@@ -2,11 +2,16 @@
 
 %%
 
+[\ \n\t]+
+(--)[a-zA-Z0-9]*
+"/*"([^*]|"\n"|(\*+([^*/]|"\n")))*\*+"/" 
+
 (Fun)   { printf("Kljucna_Rec_Fun\n"); }
 (\<\<)  { printf("Zagrada_<<\n"); }
 (\>\>)  { printf("Zagrada_>>\n"); }
 \(      { printf("Zagrada_(\n"); }
 \)      { printf("Zagrada_)\n"); }
+
 \,	    { printf("Karakter_,)\n"); }
 \;	    { printf("Karakter_;"); }
 
@@ -15,15 +20,10 @@
 (unsigned)|(\.uceo)      { printf("Tip_Podataka_UNSIGNED_INT\n"); }
 (float)|(\.dec)		     { printf("Tip_Podataka_FLOAT\n"); }
 
-(tacno)|(ntacno) 			{ printf("BROJ_TIPA_BOOL\n"); }
-[+-][0-9]{1,5}		       	{ printf("BROJ_TIPA_INT\n"); }
-[0-9]{1,5}                 	{ printf("BROJ_TIPA_UNSIGNED_INT\n"); }
-[0-9]{1,5}(,)[0-9]{1,5}    	{ printf("BROJ_TIPA_DECIMAL\n"); }
-
-[\ \n\t]+
-(--)[a-zA-Z0-9]*
-"/*"([^*]|"\n"|(\*+([^*/]|"\n")))*\*+"/" 
-
+(tacno)|(ntacno) 		 { printf("BROJ_TIPA_BOOL\n"); }
+[0-9]{1,5}		       	 { printf("BROJ_TIPA_INT\n"); }
+(uceo.)[0-9]{1,5}        { printf("BROJ_TIPA_UNSIGNED_INT\n"); }
+[0-9]{1,5}(,)[0-9]{1,5}  { printf("BROJ_TIPA_DECIMAL\n"); }
 
 [A-Z][a-zA-Z0-9]* { printf("Identifikator_Prepoznat\n"); }
 
@@ -36,18 +36,25 @@
 (\&)|(\.i)              { printf("Relacioni_Operator_&\n"); }
 (\|)|(\.ili)            { printf("Relacioni_Operator_|\n"); }
 
-(\+)|(\.dodaj)    { printf("Operator_+\n"); }
-(\-)|(\.oduzmi)   { printf("Operator_-\n"); }
-(\*)|(\.pomnozi)  { printf("Operator_*\n"); }
-(\/)|(\.podeli)   { printf("Operator_/\n"); }
-(\%)|(\.moduo)    { printf("Operator_moduo\n"); }
-(\^)|(\.stepen)   { printf("Operator_^\n"); }
+(\+)|(\.dodaj)    		{ printf("Operator_+\n"); }
+(\-)|(\.oduzmi)   		{ printf("Operator_-\n"); }
+(\*)|(\.pomnozi)  		{ printf("Operator_*\n"); }
+(\/)|(\.podeli)   		{ printf("Operator_/\n"); }
+(\%)|(\.moduo)    		{ printf("Operator_moduo\n"); }
+(\^)|(\.stepen)   		{ printf("Operator_^\n"); }
 
-(\=)|(\.upisi) { printf("Dodela_=\n"); }
-(\.ispis)      { printf("Ispis_na_ekran\n"); }
+(\.inkr)		  		{ printf("Inkrement_++\n"); }
+(\.dekr) 	     		 { printf("Dekrement_--\n"); }
+
+(\=)|(\.upisi) 	  		{ printf("Dodela_=\n"); }
+(\.ispis)         		{ printf("Ispis_na_ekran\n"); }
 
 
-(\?)  { printf("Kljucna_Rec_IF\n"); }
+(\?)|(\.ako)      		{ printf("Kljucna_Rec_IF\n"); }
+(\.ako_nije)	  		{ printf("Kljucna_Rec_ELSE\n"); }
+
+(return)|(\.vrati)		{ printf("Kljucna_Rec_RETURN\n"); }
+
 (\{)  { printf("Zagrada_{\n"); }
 (\})  { printf("Zagrada_}\n"); }
 

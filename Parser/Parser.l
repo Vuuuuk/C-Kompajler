@@ -6,7 +6,7 @@
 %%
 
 [\ \n\t]+
-(--)[a-zA-Z0-9]*
+(--)[^\n]*
 "/*"([^*]|"\n"|(\*+([^*/]|"\n")))*\*+"/" 
 
 (Fun)   				 	{ return FUN; }
@@ -15,8 +15,8 @@
 \(      				 	{ return ZAGO; }
 \)      				 	{ return ZAGZ; }
 
-\,      				 	{ return SEPARATOR; }
-\;      				 	{ return SEPARATOR; }
+\,      				 	{ return SEPARATOR_ZAREZ; }
+\;      				 	{ return SEPARATOR_TACKA_ZAREZ; }
 
 (bool)|(\.bool)			 	{ return TIP; }
 (int)|(\.ceo) 			 	{ return TIP; }
@@ -24,8 +24,8 @@
 (float)|(\.dec)	    	 	{ return TIP; }
 
 (tacno)|(ntacno) 			{ return BOOL; }
-[+-][0-9]{1,5}		     	{ return INT; }
-[0-9]{1,5}				 	{ return U_INT; }
+[0-9]{1,5}		     		{ return INT; }
+(uceo.)[0-9]{1,5}			{ return U_INT; }
 [0-9]{1,5}(,)[0-9]{1,5}  	{ return FLOAT; }
 
 [A-Z][a-zA-Z0-9]*		 	{ return ID; }	
@@ -46,10 +46,17 @@
 (\%)|(\.moduo)			 	{ return AOP; }
 (\^)|(\.stepen)			 	{ return AOP; }
 
+(\.inkr)					{ return INCR; }
+(\.dekr) 	    			{ return DECR; }
+
 (\=)|(\.upisi)			 	{ return DOP; }
 (\.ispis)				 	{ return DOP; }
 
-(\?)					 	{ return DOP; }
+(\?)|(\.ako)			    { return IF; }
+(\.ako_nije)				{ return ELSE; }
+
+(return)|(\.vrati)			{ return IZLZ; }
+
 (\{)						{ return IF_ZAGO; }	
 (\})					 	{ return IF_ZAGZ; }
 
