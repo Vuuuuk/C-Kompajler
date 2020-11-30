@@ -61,6 +61,8 @@
 %type <i> broj 
 %type <i> parametar
 
+%type <s> format
+
 %%
 
 program
@@ -125,7 +127,7 @@ promenjiva
   ;
 
 format
-  : ID
+  : ID { $$ = $1; }
   | format SEPARATOR_ZAREZ ID 
   ;
 
