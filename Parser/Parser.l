@@ -1,5 +1,7 @@
 %option noyywrap yylineno
 %{
+  #include <string.h>
+  #include "defs.h"
   #include "Parser.tab.h"
 %}
 
@@ -9,7 +11,7 @@
 (--)[^\n]*
 "/*"([^*]|"\n"|(\*+([^*/]|"\n")))*\*+"/" 
 
-(Fun)   				 	{ return FUN; }
+(Fun)   				 	{ return _FUN; }
 (\<\<)  				 	{ return F_ZAGO; }
 (\>\>)  				 	{ return F_ZAGZ; }
 \(      				 	{ return ZAGO; }
@@ -18,39 +20,44 @@
 \,      				 	{ return SEPARATOR_ZAREZ; }
 \;      				 	{ return SEPARATOR_TACKA_ZAREZ; }
 
-(bool)|(\.bool)			 	{ return TIP; }
-(int)|(\.ceo) 			 	{ return TIP; }
-(unsigned)|(\.uceo) 	 	{ return TIP; }
-(float)|(\.dec)	    	 	{ return TIP; }
+(bool)|(\.bool)			 	{ yylval.i = BOOL;  return TIP; }
+(int)|(\.ceo) 			 	{ yylval.i = INT;   return TIP; }
+(unsigned)|(\.uceo) 	 	{ yylval.i = UINT;  return TIP; }
+(float)|(\.dec)	    	 	{ yylval.i = FLOAT; return TIP; }
 
-(tacno)|(ntacno) 			{ return BOOL; }
-[0-9]{1,5}		     		{ return INT; }
-(uceo.)[0-9]{1,5}			{ return U_INT; }
-[0-9]{1,5}(,)[0-9]{1,5}  	{ return FLOAT; }
+(tacno)|(ntacno) 			{ yylval.s = strdup(yytext); return _BOOL; }
+[0-9]{1,5}		     		{ yylval.s = strdup(yytext); return _INT; }
+(uceo.)[0-9]{1,5}			{ yylval.s = strdup(yytext); 
+                       		  yylval.s[0] = 0;
+                       		  yylval.s[1] = 0;
+                       		  yylval.s[2] = 0;
+                       		  yylval.s[3] = 0;
+                       		  yylval.s[4] = 0;   		 return _U_INT; }
+[0-9]{1,5}(,)[0-9]{1,5}  	{ return _FLOAT; }
 
-[A-Z][a-zA-Z0-9]*		 	{ return ID; }	
+[A-Z][a-zA-Z0-9]*		 	{ yylval.s = strdup(yytext); return ID; }	
 
-(>)|(\.vece)			 	{ return ROP; }	
-(<)|(\.manje)			 	{ return ROP; }
-(>=)|(=>)|(\.vecee)     	{ return ROP; }
-(<=)|(=<)|(\.manjee)     	{ return ROP; }
-(==)|(\.jednako)         	{ return ROP; }
-(!=)|(=!)|(\.razlicito)  	{ return ROP; }
-(\&)|(\.i)				 	{ return ROP; }
-(\|)|(\.ili)		     	{ return ROP; }
+(>)|(\.vece)			 	{ yylval.i = VECE;      return ROP; }	
+(<)|(\.manje)			 	{ yylval.i = MANJE;     return ROP; }
+(>=)|(=>)|(\.vecee)     	{ yylval.i = VECEE;     return ROP; }
+(<=)|(=<)|(\.manjee)     	{ yylval.i = MANJEE;    return ROP; }
+(==)|(\.jednako)         	{ yylval.i = JEDNAKO;   return ROP; }
+(!=)|(=!)|(\.razlicito)  	{ yylval.i = RAZLICITO; return ROP; }
+(\&)|(\.i)				 	{ yylval.i = I; 	    return ROP; }
+(\|)|(\.ili)		     	{ yylval.i = ILI; 	    return ROP; }
 
-(\+)|(\.dodaj)			 	{ return AOP; }
-(\-)|(\.oduzmi)				{ return AOP; }
-(\*)|(\.pomnozi)	     	{ return AOP; }		 
-(\/)|(\.podeli)			 	{ return AOP; }
-(\%)|(\.moduo)			 	{ return AOP; }
-(\^)|(\.stepen)			 	{ return AOP; }
+(\+)|(\.dodaj)			 	{ yylval.i = DODAJ;   return AOP; }
+(\-)|(\.oduzmi)				{ yylval.i = ODUZMI;  return AOP; }
+(\*)|(\.pomnozi)	     	{ yylval.i = POMNOZI; return AOP; }		 
+(\/)|(\.podeli)			 	{ yylval.i = PODELI;  return AOP; }
+(\%)|(\.moduo)			 	{ yylval.i = MODUO;   return AOP; }
+(\^)|(\.stepen)			 	{ yylval.i = STEPEN;  return AOP; }
 
 (\.inkr)					{ return INCR; }
 (\.dekr) 	    			{ return DECR; }
 
-(\=)|(\.upisi)			 	{ return DOP; }
-(\.ispis)				 	{ return DOP; }
+(\=)|(\.upisi)			 	{ yylval.i = UPISI;  return DOP; }
+(\.ispis)				 	{ yylval.i = ISPISI; return DOP; }
 
 (\?)|(\.ako)			    { return IF; }
 (\.ako_nije)				{ return ELSE; }
