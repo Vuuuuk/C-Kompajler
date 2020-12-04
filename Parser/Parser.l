@@ -24,6 +24,7 @@
 (int)|(\.ceo) 			 	{ yylval.i = INT;   return TIP; }
 (unsigned)|(\.uceo) 	 	{ yylval.i = UINT;  return TIP; }
 (float)|(\.dec)	    	 	{ yylval.i = FLOAT; return TIP; }
+(void)|(.bez_tipa)			{ yylval.i = VOID;  return TIP; }
 
 (tacno)|(ntacno) 			{ yylval.s = strdup(yytext); return _BOOL; }
 [0-9]{1,5}		     		{ yylval.s = strdup(yytext); return _INT; }
@@ -56,8 +57,7 @@
 (\.inkr)					{ return INCR; }
 (\.dekr) 	    			{ return DECR; }
 
-(\=)|(\.upisi)			 	{ yylval.i = UPISI;  return DOP; }
-(\.ispis)				 	{ yylval.i = ISPISI; return DOP; }
+(\=)|(\.upisi)			 	{ return DOP; }
 
 (\?)|(\.ako)			    { return IF; }
 (\.ako_nije)				{ return ELSE; }
