@@ -20,6 +20,8 @@
 (unsigned)|(\.uceo)      { printf("Tip_Podataka_UNSIGNED_INT\n"); }
 (float)|(\.dec)		     { printf("Tip_Podataka_FLOAT\n"); }
 
+(void)|(.bez_tipa)		 { printf("Tip_Funkcije_VOID\n"); }
+
 (tacno)|(ntacno) 		 { printf("BROJ_TIPA_BOOL\n"); }
 [0-9]{1,5}		       	 { printf("BROJ_TIPA_INT\n"); }
 (uceo.)[0-9]{1,5}        { printf("BROJ_TIPA_UNSIGNED_INT\n"); }
@@ -47,7 +49,6 @@
 (\.dekr) 	     		 { printf("Dekrement_--\n"); }
 
 (\=)|(\.upisi) 	  		{ printf("Dodela_=\n"); }
-(\.ispis)         		{ printf("Ispis_na_ekran\n"); }
 
 
 (\?)|(\.ako)      		{ printf("Kljucna_Rec_IF\n"); }
