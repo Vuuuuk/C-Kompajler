@@ -21,6 +21,21 @@
 
   //pomocna za cuvanje tipa, iz pojma promenjiva;
   int tip_pomocna = 0; 
+
+  //pomocna za return
+  bool return_pomocna = 0;
+
+  //pomocna za broj parametara_INT/UINT
+  int broj_parametara_int = 0;
+  int broj_parametara_uint = 0;
+
+  //pomocna za redni_broj nekog parametra
+  int redni_broj_parametara = 0;
+
+  //pomocna za individualni zadatak 3
+  int check_tip = 0;
+
+
 %}
 
 %union { int i; char *s; }
@@ -60,6 +75,20 @@
 
 %token IZLZ
 
+//INDIVIDUALNI ZADATAK 2
+%token DO
+%token LOOP
+%token END
+%token WHILE
+
+//INDIVIDUALNI ZADATAK 3
+%token CHECK
+%token CASE
+%token SEPARATOR_DVE_TACKE
+%token BREAK
+%token DEFAULT
+
+
 %type <i> skup_izraza 
 %type <i> skup_rel_izraza 
 %type <i> izraz 
@@ -67,6 +96,7 @@
 %type <i> parametar
 
 %type <i> poziv_funkcije
+%type <i> poziv_funkcije_void
 %type <i> argument
 
 %%
@@ -89,14 +119,23 @@ funkcija
     {
       fun_indeks_pomocna = lookup_symbol($3, FUN);
       if(fun_indeks_pomocna == NO_INDEX)
-        fun_indeks_pomocna = insert_symbol($3, FUN, $2, NO_ATR, NO_ATR);
+        fun_indeks_pomocna = insert_symbol($3, FUN, $2, NO_ATR, NO_ATR, NO_ATR, NO_ATR);
       else
         err("Funkcija sa datim imenom vec postoji - [%s] ", $3);
     }
     F_ZAGO parametar F_ZAGZ telo
     {
+      for(int i = fun_indeks_pomocna+1; i <= get_last_element(); i++)
+        if(get_kind(i) == VAR && get_atr2(i) == 0)
+          err("Promenjiva je kreirana ali nema dodeljenu vrednost - %s", get_name(i));
+
+      if(return_pomocna == 0 && $2 != VOID)
+        warn("Funkcija mora da vrati neku vrednost - [%s]", $3);
+
       clear_symbols(fun_indeks_pomocna + 1);
       var_brojac = 0;
+      return_pomocna = 0;
+      redni_broj_parametara = 0;
     }
   ;
 
@@ -104,22 +143,59 @@ parametar
   :
     {
       set_atr1(fun_indeks_pomocna, 0);
+      set_atr3(fun_indeks_pomocna, 0);
     }
   | TIP ID
     {
       if($1 == VOID)
       	err("Parametar ne sme biti tipa VOID - [%s]", $2);
-      else
+      if(lookup_symbol($2, PAR) == NO_INDEX)
       {
-      	insert_symbol($2, PAR, $1, 1, NO_ATR);
-      	set_atr1(fun_indeks_pomocna, 1);
-      	set_atr2(fun_indeks_pomocna, $1);
+        if($1 == INT)
+        {
+      	 insert_symbol($2, PAR, $1, ++redni_broj_parametara, NO_ATR, NO_ATR, NO_ATR);
+      	 set_atr1(fun_indeks_pomocna, ++broj_parametara_int);
+      	 set_atr2(fun_indeks_pomocna, $1);
+        }
+        else if($1 == UINT)
+        {
+         insert_symbol($2, PAR, $1, ++redni_broj_parametara, NO_ATR, NO_ATR, NO_ATR);
+         set_atr3(fun_indeks_pomocna, ++broj_parametara_uint);
+         set_atr4(fun_indeks_pomocna, $1);
+        }
   	  }
+      else
+        err("Parametar vec postoji u funkciji - [%s]", $2);
+    }
+  | parametar SEPARATOR_ZAREZ TIP ID
+    {
+        if($3 == VOID)
+        err("Parametar ne sme biti tipa VOID - [%s]", $4);
+        if(lookup_symbol($4, PAR) == NO_INDEX)
+          {
+            if($3 == INT)
+            {
+              insert_symbol($4, PAR, $3, ++redni_broj_parametara, NO_ATR, NO_ATR, NO_ATR);
+              set_atr1(fun_indeks_pomocna, ++broj_parametara_int);
+              set_atr2(fun_indeks_pomocna, $3);
+            }
+            else if($3 == UINT)
+            {
+              insert_symbol($4, PAR, $3, ++redni_broj_parametara, NO_ATR, NO_ATR, NO_ATR);
+              set_atr3(fun_indeks_pomocna, ++broj_parametara_uint);
+              set_atr4(fun_indeks_pomocna, $3);
+            }
+          }
+        else
+          err("Parametar vec postoji u funkciji - [%s]", $4);
+
+        // print_symtab(); -> provera indeksa parametara funkcije
+
     }
   ;
 
 telo
-  : ZAGO lista_promenjivih lista_operacija izlaz ZAGZ
+  : ZAGO lista_promenjivih lista_operacija ZAGZ
   ;
 
 lista_promenjivih
@@ -139,10 +215,29 @@ format
   	else
   	{
     	if(lookup_symbol($1, VAR|PAR) == NO_INDEX)
-        	insert_symbol($1, VAR, tip_pomocna, ++var_brojac, NO_ATR);
+        	insert_symbol($1, VAR, tip_pomocna, ++var_brojac, NO_ATR, NO_ATR, NO_ATR);
       	else
         	err("Promenjiva sa datim imenom vec postoji - [%s]", $1);
-	}
+	  }
+  }
+  | ID DOP broj
+  {
+    if(tip_pomocna == VOID)
+      err("Promenjiva ne sme biti tipa VOID - [%s]", $1);
+
+    else
+      {
+        if(lookup_symbol($1, VAR|PAR) == NO_INDEX)
+           insert_symbol($1, VAR, tip_pomocna, ++var_brojac, NO_ATR, NO_ATR, NO_ATR);
+        else
+          err("Promenjiva sa datim imenom vec postoji - [%s]", $1);
+      }
+
+    if(get_type($3) != tip_pomocna)
+      err("Nekompatibilne vrednosti, nemoguca dodela promenjivoj - [%s]", $1);
+
+    set_atr2(lookup_symbol($1, VAR|PAR), 1); //ID koji ime neku vrednost dobija 1
+
   }
   | format SEPARATOR_ZAREZ ID
   {
@@ -151,10 +246,10 @@ format
   	else
   	{
   		if(lookup_symbol($3, VAR|PAR) == NO_INDEX)
-    		insert_symbol($3, VAR, tip_pomocna, ++var_brojac, NO_ATR);
+    		insert_symbol($3, VAR, tip_pomocna, ++var_brojac, NO_ATR, NO_ATR, NO_ATR);
     	else
     		err("Promenjiva sa datim imenom vec postoji - [%s]", $3);
-	}
+	  }
   }
   ;
 
@@ -166,9 +261,13 @@ lista_operacija
 operacija
   : inkrementacija
   | dekrementacija
+  | do_while_operacija        // drugi individualni zadatak
+  | check_operacija           // treci individualni zadatak
+  | poziv_funkcije_void       // omogucen samostalan poziv funkcije tipa VOID
   | dodela
   | if_operacija
   | grupa_operacija
+  | izlaz
   ;
 
 inkrementacija
@@ -200,15 +299,78 @@ dekrementacija
     DECR SEPARATOR_TACKA_ZAREZ
   ;
 
+//INDIVIDUALNI ZADATAK 2
+
+do_while_operacija
+  : DO LOOP operacija END WHILE ZAGO skup_rel_izraza ZAGZ SEPARATOR_TACKA_ZAREZ
+  ;
+
+//INDIVIDUALNI ZADATAK 2
+
+//INDIVIDUALNI ZADATAK 3
+
+  check_operacija
+  : CHECK ZAGO ID { check_tip = get_type(lookup_symbol($3, VAR|PAR)); } ZAGZ IF_ZAGO check_operacija_case check_operacija_default IF_ZAGZ
+  {
+    int pomocna_ID_index = lookup_symbol($3, VAR|PAR);
+
+    if(pomocna_ID_index == NO_INDEX)
+      err("Ne postoji ID za koji moze da se izvrsi check operacija - %s", $3);
+  }
+  ;
+
+  check_operacija_case
+  : CASE broj SEPARATOR_DVE_TACKE operacija check_operacija_break 
+  { 
+    if(get_type($2) != check_tip)
+      err("Tip check operacije se ne podudara sa tipom ID-a za koji vrsimo proveru [CASE] - %s", get_name($2));
+    else
+    {
+      //Provera da li je bio iskoriscen
+      if(get_atr1($2) == NO_ATR)
+        set_atr1($2,1);
+      else
+        err("Case %s vec definisan", get_name($2));
+    }
+  }
+  | check_operacija_case CASE broj SEPARATOR_DVE_TACKE operacija check_operacija_break 
+  { 
+    if(get_type($3) != check_tip)
+      err("Tip check operacije se ne podudara sa tipom ID-a za koji vrsimo proveru [CASE] - %s", get_name($3));
+    else
+    {
+      //Provera da li je bio iskoriscen
+      if(get_atr1($3) == NO_ATR)
+        set_atr1($3,1);
+      else
+        err("Case %s vec definisan", get_name($3));
+    }
+  }
+  ;
+
+  check_operacija_break
+  :
+  | BREAK SEPARATOR_TACKA_ZAREZ 
+  ;
+
+  check_operacija_default
+  :
+  | DEFAULT SEPARATOR_DVE_TACKE operacija
+  ;
+
+//INDIVIDUALNI ZADATAK 3
+
 dodela
   : ID DOP skup_izraza SEPARATOR_TACKA_ZAREZ
     {
       int id_index = lookup_symbol($1, VAR|PAR);
       if(id_index == NO_INDEX)
         err("Nepostojeci ID, nemoguca dodela - [%s]", $1);
-      else
-        if(get_type(id_index) != get_type($3))
-          err("Razliciti tipovi, nemoguca dodela");
+      else if(get_type(id_index) != get_type($3))
+        err("Razliciti tipovi, nemoguca dodela");
+
+      set_atr2(lookup_symbol($1, VAR|PAR), 1); //ID koji ime neku vrednost dobija 1
+
     }
   ;
 
@@ -226,25 +388,21 @@ grupa_operacija
   ;
 
 izlaz
-  : 
+  : IZLZ SEPARATOR_TACKA_ZAREZ
   	{
-  		if(get_type(fun_indeks_pomocna) == INT || get_type(fun_indeks_pomocna) == UINT)
-    		warn("Funkcija treba da vratu neku vrednost, odgovarajuceg tipa - [%s]", get_name(fun_indeks_pomocna));
+      return_pomocna = 1;
+      if(get_type(fun_indeks_pomocna) == INT || get_type(fun_indeks_pomocna) == UINT)
+      	warn("Funkcija treba da vratu neku vrednost, odgovarajuceg tipa - [%s]", get_name(fun_indeks_pomocna));
   	}
-  | IZLZ SEPARATOR_TACKA_ZAREZ
-  	{
-      	if(get_type(fun_indeks_pomocna) == INT || get_type(fun_indeks_pomocna) == UINT)
-      		warn("Funkcija treba da vratu neku vrednost, odgovarajuceg tipa - [%s]", get_name(fun_indeks_pomocna));
-  	}
-  | IZLZ skup_izraza SEPARATOR_TACKA_ZAREZ
+  | IZLZ {return_pomocna = 1;} skup_izraza SEPARATOR_TACKA_ZAREZ
     {
       if(get_type(fun_indeks_pomocna) == VOID)
       	err("Funkcija je tipa void, ne sme da ima RETURN - [%s]", get_name(fun_indeks_pomocna));
       else
       {
-      	if(get_type(fun_indeks_pomocna) != get_type($2))
+      	if(get_type(fun_indeks_pomocna) != get_type($3))
         	err("Razliciti tipovi, IZLAZ nije moguc");
-	  }
+	    }
     }
   ;
 
@@ -292,6 +450,25 @@ izraz
     }
   ;
 
+poziv_funkcije_void
+  : ID
+    {
+      fun_poziv_pomocna = lookup_symbol($1, FUN);
+      if(fun_poziv_pomocna == NO_INDEX)
+        err("Funkcija koju ste pokusali da pozovete ne postoji - [%s]", $1);
+
+      if(get_type(fun_poziv_pomocna) != VOID)
+        err("Nemoguc samostalan poziv za funkciju koja nije tipa VOID - [%s]", $1);
+    }
+  ZAGO argument ZAGZ SEPARATOR_TACKA_ZAREZ
+    {
+      if((get_atr1(fun_poziv_pomocna) + get_atr3(fun_poziv_pomocna)) != $4)
+        err("Pogresan broj argumenata za pozvanu funkciju - [%s]", get_name(fun_poziv_pomocna));
+      set_type(FUN_REG, get_type(fun_poziv_pomocna));
+      $$ = FUN_REG;
+    }
+  ;
+
 poziv_funkcije
   : ID
   	{
@@ -301,7 +478,7 @@ poziv_funkcije
   	}
   ZAGO argument ZAGZ
   	{
-  		if(get_atr1(fun_poziv_pomocna) != $4)
+  		if((get_atr1(fun_poziv_pomocna) + get_atr3(fun_poziv_pomocna)) != $4)
   			err("Pogresan broj argumenata za pozvanu funkciju - [%s]", get_name(fun_poziv_pomocna));
   		set_type(FUN_REG, get_type(fun_poziv_pomocna));
   		$$ = FUN_REG;
@@ -310,12 +487,22 @@ poziv_funkcije
 
 argument
 	: { $$ = 0; }
-	| skup_izraza
-		{
-			if(get_atr2(fun_poziv_pomocna) != get_type($1))
-				err("Pogresan tip argumenta za funkciju - [%s]", get_name(fun_poziv_pomocna));
-			$$ = 1;
-		}
+	| skup_izraza 
+  { 
+    if(get_type($1) == INT)
+      {
+          if(get_atr2(fun_poziv_pomocna) != get_type($1))
+            err("Tip argumenta nije kompatibilan - '%s'", get_name(fun_poziv_pomocna));
+          $$ = 1;
+      }
+      else
+      {
+          if(get_atr4(fun_poziv_pomocna) != get_type($1))
+            err("Tip argumenta nije kompatibilan - '%s'", get_name(fun_poziv_pomocna));
+           $$ = 1;
+      }
+  }
+  | argument SEPARATOR_ZAREZ skup_izraza { $$++; }
 	;
 
 broj
@@ -346,6 +533,8 @@ int main()
   init_symtab();
 
   FATALNA_GRESKA = yyparse();
+
+  //print_symtab(); -> provera tabele posle parsiranja
 
   clear_symtab();
 

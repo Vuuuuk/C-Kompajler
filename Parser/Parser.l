@@ -17,7 +17,7 @@
 \(      				 	{ return ZAGO; }
 \)      				 	{ return ZAGZ; }
 
-\,      				 	{ return SEPARATOR_ZAREZ; }
+\,     				 		{ return SEPARATOR_ZAREZ; }
 \;      				 	{ return SEPARATOR_TACKA_ZAREZ; }
 
 (bool)|(\.bool)			 	{ yylval.i = BOOL;  return TIP; }
@@ -28,13 +28,10 @@
 
 (tacno)|(ntacno) 			{ yylval.s = strdup(yytext); return _BOOL; }
 [0-9]{1,5}		     		{ yylval.s = strdup(yytext); return _INT; }
-(uceo.)[0-9]{1,5}			{ yylval.s = strdup(yytext); 
-                       		  yylval.s[0] = 0;
-                       		  yylval.s[1] = 0;
-                       		  yylval.s[2] = 0;
-                       		  yylval.s[3] = 0;
-                       		  yylval.s[4] = 0;   		 return _U_INT; }
-[0-9]{1,5}(,)[0-9]{1,5}  	{ return _FLOAT; }
+[0-9]{1,5}[u]				{ yylval.s = strdup(yytext); 
+							  yylval.s[yyleng-1] = 0;
+                       		  return _U_INT; }
+[0-9]{1,5}(,,)[0-9]{1,5}  	{ return _FLOAT; }
 
 [A-Z][a-zA-Z0-9]*		 	{ yylval.s = strdup(yytext); return ID; }	
 
@@ -67,6 +64,18 @@
 (\{)						{ return IF_ZAGO; }	
 (\})					 	{ return IF_ZAGZ; }
 
+
+
+(do)						{ return DO; }
+(loop)						{ return LOOP; }
+(end)						{ return END; }	
+(while)						{ return WHILE;}
+
+(check)						{ return CHECK; }
+(case)						{ return CASE; }
+(:)							{ return SEPARATOR_DVE_TACKE; }
+(break)						{ return BREAK; }
+(default)					{ return DEFAULT; }
 
 
 . { printf("\n[LINIJA -> %d]: LEKSICKA GRESKA [karakter -> %c]\n", yylineno, *yytext); }    
