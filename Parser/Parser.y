@@ -290,11 +290,12 @@ dekrementacija
       {
       	if(lookup_symbol($1, FUN) != NO_INDEX)
       		err("Nemoguca dekrementacija same funkcije - [%s]", $1);
+        else
       	{
         	int id_index = lookup_symbol($1, VAR|PAR);
         	if(id_index == NO_INDEX)
           	  err("Nepostojeci ID - [%s], nemoguca dekrementacija", $1);
-  		}
+  		  }
       } 
     DECR SEPARATOR_TACKA_ZAREZ
   ;
@@ -529,10 +530,11 @@ void warning(char *s)
 
 int main() 
 { 
-  int FATALNA_GRESKA;
+  int synerr;
+
   init_symtab();
 
-  FATALNA_GRESKA = yyparse();
+  synerr = yyparse();
 
   //print_symtab(); -> provera tabele posle parsiranja
 
@@ -544,7 +546,7 @@ int main()
   if(broj_upozorenja)
     printf("\n Broj UPOZORENJA: [%d] \n", broj_upozorenja);
 
-  if(FATALNA_GRESKA)
+  if(synerr)
     return -1;
   else
     return broj_gresaka;

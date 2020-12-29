@@ -27,7 +27,7 @@
 (void)|(.bez_tipa)			{ yylval.i = VOID;  return TIP; }
 
 (tacno)|(ntacno) 			{ yylval.s = strdup(yytext); return _BOOL; }
-[0-9]{1,5}		     		{ yylval.s = strdup(yytext); return _INT; }
+[+-]?[0-9]{1,5}		     	{ yylval.s = strdup(yytext); return _INT; }
 [0-9]{1,5}[u]				{ yylval.s = strdup(yytext); 
 							  yylval.s[yyleng-1] = 0;
                        		  return _U_INT; }
@@ -78,5 +78,6 @@
 (default)					{ return DEFAULT; }
 
 
-. { printf("\n[LINIJA -> %d]: LEKSICKA GRESKA [karakter -> %c]\n", yylineno, *yytext); }    
+.	{ printf("\n[LINIJA -> %d]: LEKSICKA GRESKA [karakter -> %c]\n", yylineno, *yytext); }
 
+%%
