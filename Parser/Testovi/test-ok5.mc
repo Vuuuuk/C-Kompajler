@@ -1,7 +1,10 @@
---OPIS: testiranje inkrementiranja
+Fun .ceo Test << , .ceo A, .ceo B, .uceo C >>
+(
+	.vrati 0;
+)
 Fun .ceo Main << >> 
 (
-    .ceo A = 1;
+    .ceo A;
     A .inkr;
     .vrati 0;
 )
