@@ -8,7 +8,7 @@
 %%
 
 [\ \n\t]+
-(--)[^\n]*
+\/\/.*             
 "/*"([^*]|"\n"|(\*+([^*/]|"\n")))*\*+"/" 
 
 (Fun)   				 	{ return _FUN; }
@@ -33,38 +33,34 @@
                        		  return _U_INT; }
 [0-9]{1,5}(,,)[0-9]{1,5}  	{ return _FLOAT; }
 
-[A-Z][a-zA-Z0-9]*		 	{ yylval.s = strdup(yytext); return ID; }	
+[A-Z][a-zA-Z0-9]*			{ yylval.s = strdup(yytext); return ID; }	
 
-(>)|(\.vece)			 	{ yylval.i = VECE;      return ROP; }	
-(<)|(\.manje)			 	{ yylval.i = MANJE;     return ROP; }
-(>=)|(=>)|(\.vecee)     	{ yylval.i = VECEE;     return ROP; }
-(<=)|(=<)|(\.manjee)     	{ yylval.i = MANJEE;    return ROP; }
-(==)|(\.jednako)         	{ yylval.i = JEDNAKO;   return ROP; }
-(!=)|(=!)|(\.razlicito)  	{ yylval.i = RAZLICITO; return ROP; }
-(\&)|(\.i)				 	{ yylval.i = I; 	    return ROP; }
-(\|)|(\.ili)		     	{ yylval.i = ILI; 	    return ROP; }
+(>)|(\.vece)			 	{ yylval.i = GT;      return ROP; }	
+(<)|(\.manje)			 	{ yylval.i = LT;      return ROP; }
+(>=)|(=>)|(\.vecee)     	{ yylval.i = GE;      return ROP; }
+(<=)|(=<)|(\.manjee)     	{ yylval.i = LE;      return ROP; }
+(==)|(\.jednako)         	{ yylval.i = EQ;      return ROP; }
+(!=)|(=!)|(\.razlicito)  	{ yylval.i = NE;      return ROP; }
 
-(\+)|(\.dodaj)			 	{ yylval.i = DODAJ;   return AOP; }
-(\-)|(\.oduzmi)				{ yylval.i = ODUZMI;  return AOP; }
-(\*)|(\.pomnozi)	     	{ yylval.i = POMNOZI; return AOP; }		 
-(\/)|(\.podeli)			 	{ yylval.i = PODELI;  return AOP; }
-(\%)|(\.moduo)			 	{ yylval.i = MODUO;   return AOP; }
-(\^)|(\.stepen)			 	{ yylval.i = STEPEN;  return AOP; }
+(\+)|(\.dodaj)			 	{ yylval.i = ADD;   return AOP; }
+(\-)|(\.oduzmi)				{ yylval.i = SUB;   return AOP; }
+(\*)|(\.pomnozi)	     	{ yylval.i = MUL;   return AOP; }		 
+(\/)|(\.podeli)			 	{ yylval.i = DIV;   return AOP; }
 
 (\.inkr)					{ return INCR; }
 (\.dekr) 	    			{ return DECR; }
 
 (\=)|(\.upisi)			 	{ return DOP; }
 
-(\?)|(\.ako)			    { return IF; }
+(\.ako)			    		{ return IF; }
 (\.ako_nije)				{ return ELSE; }
+
+(\?)						{ return COND_IF; }
 
 (return)|(\.vrati)			{ return IZLZ; }
 
 (\{)						{ return IF_ZAGO; }	
 (\})					 	{ return IF_ZAGZ; }
-
-
 
 (do)						{ return DO; }
 (loop)						{ return LOOP; }

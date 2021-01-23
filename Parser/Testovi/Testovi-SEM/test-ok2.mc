@@ -1,4 +1,6 @@
---OPIS: jedna deklaracija sa tri promenljive
+//OPIS: jedna deklaracija sa tri promenljive
+
+//RETURN: 2
 
 /*Implementirane su i neki dodatni tipovi kao sto su bool i float, takodje dodati su im tipovi u defs.h kao i odgovarajuci tokeni*/
 
@@ -20,7 +22,7 @@ Fun .ceo Main << >>
 
     I = tacno;
 
-    G = 1,,2;		--trenutno je ovakva leksika kod float broja, ispravicu u sledecoj verziji
+    G = 1,,2;		//trenutno je ovakva leksika kod float broja, ispravicu u sledecoj verziji
 
-    .vrati 0;
+    .vrati A;
 )

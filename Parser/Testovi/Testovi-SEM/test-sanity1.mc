@@ -1,12 +1,12 @@
---Sanity check, ispred svake funkcije potrebno je navesti Fun
---Obavezno pocetno veliko slovo, takodje pocetno veliko slovo kod ID-a je obavezno
---Parametri se stavljaju pod << >>, telo funkcije ide u ( )
---Oznaka za jednolinijski komenar
+//Sanity check, ispred svake funkcije potrebno je navesti Fun
+//Obavezno pocetno veliko slovo, takodje pocetno veliko slovo kod ID-a je obavezno
+//Parametri se stavljaju pod << >>, telo funkcije ide u ( )
+//Oznaka za jednolinijski komenar
 /*Oznaka za pocetak i kraj viselinijskog komenatara*/
 
 Fun .ceo F << .ceo X >> 
 (
-    .ceo Y = 0;             --moram dodeliti vrednost zbog individualnog zadatka 1
+    .ceo Y = 0;             //moram dodeliti vrednost zbog individualnog zadatka 1
     .vrati X + 2 - Y;
 )
 
@@ -17,7 +17,7 @@ Fun .uceo F2 << >>
 
 Fun .uceo FF << .uceo X >> 
 (
-    .uceo Y = 1u;           --moram dodeliti vrednost zbog individualnog zadatka 1
+    .uceo Y = 1u;           //moram dodeliti vrednost zbog individualnog zadatka 1
     .vrati X + F2() - Y;
 )
 
@@ -44,8 +44,6 @@ Fun .ceo Main << >>
     A = B .pomnozi BB;
     A = A .dodaj BB;
     A = A .oduzmi BB;
-    A = A .stepen BB;
-    A = A .moduo 2;
 
     --Testiranje poziva funkcije
     A = F(3);
@@ -54,7 +52,7 @@ Fun .ceo Main << >>
 
 /*Takodje ubacena je leksika za .i i .ili kako bi mogli da pravimo dodatne IF provere medjutim nikakve implementacije/provere nema, to cu uraditi u sledecoj verziji*/
 
-    --IF iskaz sa else delom
+    //IF iskaz sa else delom
     .ako (A < B)  
         A = 1;
     .ako_nije 
@@ -114,7 +112,7 @@ Fun .ceo Main << >>
         A = 1;
 
 
-    --Individualni zadatak 2, ugnjezdeno
+    //Individualni zadatak 2, ugnjezdeno
     do loop 
     (
         do loop
@@ -128,7 +126,7 @@ Fun .ceo Main << >>
     end
     while (C > B);
 
-    --Individualni zadatak 2
+    //Individualni zadatak 2
     do loop 
     (
         A .inkr;
@@ -136,7 +134,7 @@ Fun .ceo Main << >>
     end
     while (C > B);
 
-    --Individualni zadatak 3
+    //Individualni zadatak 3
     check (A) 
     {
         case 1 : A .inkr; break;
@@ -145,6 +143,6 @@ Fun .ceo Main << >>
         default : A .dekr; 
     }
 
-    .vrati 0; --moramo da dodamo neku povratnu vrednost na kraju funkcije koja nije VOID
+    .vrati 0; //moramo da dodamo neku povratnu vrednost na kraju funkcije koja nije VOID
 )
 
